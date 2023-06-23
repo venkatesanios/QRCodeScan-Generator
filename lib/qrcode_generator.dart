@@ -39,7 +39,12 @@ class GenerateQRCodeState extends State<GenerateQRCode> {
 
     final Uint8List pdfData = await pdf.save();
 
-    Printing.sharePdf(bytes: pdfData, filename: 'qr_code.pdf');
+    // await Printing.directPrintPdf(
+    //   onLayout: (format) => pdfData,
+    //   printer: Printer
+    // );
+
+    await Printing.sharePdf(bytes: pdfData, filename: 'qr_code.pdf');
   }
 
   @override
@@ -77,6 +82,9 @@ class GenerateQRCodeState extends State<GenerateQRCode> {
               version: QrVersions.auto,
               size: 200.0,
             ),
+          SizedBox(
+            height: 10,
+          ),
           ElevatedButton(
             onPressed: printQrImage,
             child: const Text('Print'),

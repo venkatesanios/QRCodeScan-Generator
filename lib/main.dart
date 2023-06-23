@@ -35,14 +35,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (context) => const GenerateQRCode()));
                 },
                 child: Text('QR CODE GENERATOR')),
+            SizedBox(
+              height: 20,
+            ),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
