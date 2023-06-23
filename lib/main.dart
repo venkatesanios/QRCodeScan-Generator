@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:qrcodeprint/qrcode_generator.dart';
+import 'package:qrcodeprint/qrcode_scan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,12 +15,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'QRCode Demo',
       theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 183, 58, 173)),
+        useMaterial3: false,
       ),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'QRCode Demo Home Page'),
+      home: const MyHomePage(title: 'QRCode Demo'),
     );
   }
 }
@@ -37,39 +39,40 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
-            ElevatedButton(onPressed: (){}, child: Text('QR CODE GENERATOR')),
-            ElevatedButton(onPressed: (){}, child: Text('QR CODE SCAN')),
-
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const GenerateQRCode()));
+                },
+                child: Text('QR CODE GENERATOR')),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const QRcodeScanner()));
+                },
+                child: Text('QR CODE SCAN')),
           ],
         ),
       ),
-  // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
