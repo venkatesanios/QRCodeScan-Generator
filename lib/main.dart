@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hand_signature/signature.dart';
+import 'package:qrcodeprint/handsignature.dart';
 import 'package:qrcodeprint/qrcode_generator.dart';
 import 'package:qrcodeprint/qrcode_scan.dart';
+import 'package:qrcodeprint/signature.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,8 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(
                           builder: (context) => const GenerateQRCode()));
                 },
-                child: Text('QR CODE GENERATOR')),
-            SizedBox(
+                child: const Text('QR CODE GENERATOR')),
+            const SizedBox(
               height: 20,
             ),
             ElevatedButton(
@@ -64,7 +67,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(
                           builder: (context) => const QRcodeScanner()));
                 },
-                child: Text('QR CODE SCAN')),
+                child: const Text('QR CODE SCAN')),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HandsignmyApp()));
+                },
+                child: const Text('Customer Signature')), //
           ],
         ),
       ),

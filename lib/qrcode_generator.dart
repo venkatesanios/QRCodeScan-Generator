@@ -25,6 +25,7 @@ class GenerateQRCodeState extends State<GenerateQRCode> {
       version: QrVersions.auto,
     ).toImageData(200.0);
 
+
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) {
@@ -44,8 +45,16 @@ class GenerateQRCodeState extends State<GenerateQRCode> {
     //   printer: Printer
     // );
 
-    await Printing.sharePdf(bytes: pdfData, filename: 'qr_code.pdf');
-  }
+    // await Printing.sharePdf(bytes: pdfData, filename: 'qr_code.pdf');
+
+    await Printing.layoutPdf(
+      onLayout: (format) async => pdfData,
+    );
+
+    // await Printing.directPrintPdf(
+    //   onLayout: (format) => pdfData,
+    // );
+   }
 
   @override
   Widget build(BuildContext context) {

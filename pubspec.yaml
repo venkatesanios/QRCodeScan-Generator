@@ -21,6 +21,9 @@ dependencies:
   pdf: ^3.6.0
   mobile_scanner: ^3.2.0
   image_picker: ^0.8.7+5
+  hand_signature: ^3.0.1
+  flutter_svg: ^2.0.7
+  path_provider: ^2.0.15
 
 
 
