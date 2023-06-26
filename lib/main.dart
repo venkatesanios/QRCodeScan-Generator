@@ -3,7 +3,6 @@ import 'package:hand_signature/signature.dart';
 import 'package:qrcodeprint/handsignature.dart';
 import 'package:qrcodeprint/qrcode_generator.dart';
 import 'package:qrcodeprint/qrcode_scan.dart';
-import 'package:qrcodeprint/signature.dart';
 
 void main() {
   runApp(const MyApp());

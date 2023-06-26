@@ -24,6 +24,9 @@ dependencies:
   hand_signature: ^3.0.1
   flutter_svg: ^2.0.7
   path_provider: ^2.0.15
+  share: ^2.0.4
+  image_gallery_saver: ^2.0.0
+  open_file: ^3.3.2
 
 
 
