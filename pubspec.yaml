@@ -29,6 +29,7 @@ dependencies:
   open_file: ^3.3.2
   intl: ^0.17.0
   geolocator: ^9.0.2
+  permission_handler: ^10.2.0
 
 
 
