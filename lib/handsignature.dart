@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'dart:typed_data';
+import 'dart:ui';
+import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -143,7 +146,7 @@ class _HandsignmyAppState extends State<HandsignmyApp> {
     }
   }
 
-  void _saveImage(BuildContext context, ByteData? byteData) async {
+  void _saveImage2(BuildContext context, ByteData? byteData) async {
     if (byteData == null) {
       return;
     }
@@ -156,6 +159,70 @@ class _HandsignmyAppState extends State<HandsignmyApp> {
 
       openPath(filePath);
       final result = await ImageGallerySaver.saveFile(filePath);
+      print('Image saved to gallery: $result');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Image saved to gallery')),
+      );
+    } catch (e) {
+      print('Error saving image: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save image')),
+      );
+    }
+  }
+
+  void _saveImage(BuildContext context, ByteData? byteData) async {
+    if (byteData == null) {
+      return;
+    }
+
+    try {
+      final buffer = byteData.buffer;
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/signature.png';
+      await File(filePath).writeAsBytes(buffer.asUint8List());
+
+      final imageFile = File(filePath);
+      final timeStamp =
+          DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
+      final stampedFilePath = '${tempDir.path}/signature_$timeStamp.png';
+
+      final imageBytes = await imageFile.readAsBytes();
+      final image = await decodeImageFromList(imageBytes);
+
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      final paint = Paint()..color = Colors.black;
+      final textSize = 20.0;
+      final padding = 10.0;
+
+      canvas.drawImage(image, Offset.zero, paint);
+
+      final paragraphBuilder = ParagraphBuilder(ParagraphStyle(
+        textAlign: TextAlign.left,
+        fontSize: textSize,
+        fontStyle: FontStyle.normal,
+      ));
+
+      paragraphBuilder.addText('Time: $timeStamp');
+      final paragraph = paragraphBuilder.build();
+      paragraph.layout(ui.ParagraphConstraints(width: image.width.toDouble()));
+      canvas.drawParagraph(
+        paragraph,
+        Offset(padding, image.height.toDouble() - textSize - padding),
+      );
+
+      final picture = recorder.endRecording();
+      final stampedImage = await picture.toImage(image.width, image.height);
+      final stampedImageData =
+          await stampedImage.toByteData(format: ui.ImageByteFormat.png);
+      final stampedImageBytes = Uint8List.view(stampedImageData!.buffer);
+      await File(stampedFilePath).writeAsBytes(stampedImageBytes);
+
+      openPath(stampedFilePath);
+      final result = await ImageGallerySaver.saveFile(stampedFilePath);
       print('Image saved to gallery: $result');
 
       ScaffoldMessenger.of(context).showSnackBar(

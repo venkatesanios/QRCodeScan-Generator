@@ -27,6 +27,8 @@ dependencies:
   share: ^2.0.4
   image_gallery_saver: ^2.0.0
   open_file: ^3.3.2
+  intl: ^0.17.0
+  geolocator: ^9.0.2
 
 
 
