@@ -48,24 +48,13 @@ class _HandsignmyAppState extends State<HandsignmyApp> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                Expanded(
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 2.0,
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                            constraints: BoxConstraints.expand(),
-                            color: Colors.white,
-                            child: HandSignature(
-                              control: control,
-                              type: SignatureDrawType.shape,
-                            ),
-                          ),
-                        ],
-                      ),
+                Row(
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: _showSignatureDialog,
+                      child: Text('Add Signature'),
                     ),
-                  ),
+                  ],
                 ),
                 Row(
                   children: <Widget>[
@@ -91,20 +80,20 @@ class _HandsignmyAppState extends State<HandsignmyApp> {
                     ),
                     CupertinoButton(
                       onPressed: () {
-                        _saveImage(context, rawImageFit.value);
+                        _saveImage(rawImageFit.value);
                       },
                       child: Text('Download/open'),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16.0,
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16.0,
                 ),
                 Text(downloadPath),
-                SizedBox(
+                const SizedBox(
                   height: 16.0,
                 ),
               ],
@@ -124,75 +113,58 @@ class _HandsignmyAppState extends State<HandsignmyApp> {
     );
   }
 
-  void _saveImage1(BuildContext context, ByteData? byteData) async {
-    if (byteData == null) {
-      return;
-    }
-
-    try {
-      final buffer = byteData.buffer;
-      final tempDir = await getTemporaryDirectory();
-      final filePath = '${tempDir.path}/signature.png';
-      await File(filePath).writeAsBytes(buffer.asUint8List());
-
-      final imageFile = File(filePath);
-      final timeStamp =
-          DateFormat('yyyy-MM-dd_HH-mm-ss').format(DateTime.now());
-      final stampedFilePath = '${tempDir.path}/signature_$timeStamp.png';
-
-      final imageBytes = await imageFile.readAsBytes();
-      final image = await decodeImageFromList(imageBytes);
-
-      final recorder = ui.PictureRecorder();
-      final canvas = Canvas(recorder);
-      final paint = Paint()..color = Colors.black;
-      final textSize = 20.0;
-      final padding = 10.0;
-
-      canvas.drawImage(image, Offset.zero, paint);
-
-      final paragraphBuilder = ParagraphBuilder(ParagraphStyle(
-        textAlign: TextAlign.left,
-        fontSize: textSize,
-        fontStyle: FontStyle.normal,
-      ));
-
-      paragraphBuilder.addText('Time: $timeStamp');
-      final paragraph = paragraphBuilder.build();
-      paragraph.layout(ui.ParagraphConstraints(width: image.width.toDouble()));
-      canvas.drawParagraph(
-        paragraph,
-        Offset(padding, image.height.toDouble() - textSize - padding),
-      );
-
-      final picture = recorder.endRecording();
-      final stampedImage = await picture.toImage(image.width, image.height);
-      final stampedImageData =
-          await stampedImage.toByteData(format: ui.ImageByteFormat.png);
-      final stampedImageBytes = Uint8List.view(stampedImageData!.buffer);
-      await File(stampedFilePath).writeAsBytes(stampedImageBytes);
-
-      openPath(stampedFilePath);
-      final result = await ImageGallerySaver.saveFile(stampedFilePath);
-      print('Image saved to gallery: $result');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image saved to gallery')),
-      );
-    } catch (e) {
-      print('Error saving image: $e');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save image')),
-      );
-    }
+  void _showSignatureDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Customer Signature'),
+          content: Container(
+            width: double.infinity,
+            height: 300,
+            child: HandSignature(
+              control: control,
+              type: SignatureDrawType.shape,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                control.clear();
+                rawImageFit.value = null;
+              },
+              child: Text('Clear'),
+            ),
+            TextButton(
+              onPressed: () async {
+                PermissionClass permission = PermissionClass();
+                permission.checkPermission(context, Permission.location);
+                rawImageFit.value = await control.toImage(
+                  color: Colors.black,
+                  background: Colors.lightGreenAccent[100],
+                  fit: true,
+                );
+              },
+              child: Text('Export'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                _saveImage(rawImageFit.value);
+              },
+              child: Text('Download/open'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _saveImage(BuildContext context, ByteData? byteData) async {
+  void _saveImage(ByteData? byteData) async {
     if (byteData == null) {
       return;
     }
-
+    print('raw image fit $byteData');
     try {
       final buffer = byteData.buffer;
       final tempDir = await getTemporaryDirectory();
@@ -259,15 +231,6 @@ class _HandsignmyAppState extends State<HandsignmyApp> {
         SnackBar(content: Text('Failed to save image')),
       );
     }
-  }
-
-  void _shareImage(String imagePath) {
-    // Share.shareFiles([imagePath]);
-    //Share.shareFiles([imagePath], text: 'Sharing image');
-    Share.shareFiles([imagePath],
-        text: 'Sharing image',
-        subject: 'Image Subject',
-        sharePositionOrigin: Rect.zero);
   }
 
   void openPath(String path) async {
